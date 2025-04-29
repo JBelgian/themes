@@ -41,7 +41,6 @@ Route::get('/contact', function () {
     return view('contact.index');
 });
 
-
 // Registration Routes
 Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register'); // Use the imported class
 Route::post('/register', [AuthController::class, 'register']); // Use the imported class
