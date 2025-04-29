@@ -41,6 +41,10 @@ Route::get('/contact', function () {
     return view('contact.index');
 });
 
+Route::post('/newsletter', function() {
+    return 'Subscribed successfully';
+});
+
 // Registration Routes
 Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register'); // Use the imported class
 Route::post('/register', [AuthController::class, 'register']); // Use the imported class

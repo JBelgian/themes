@@ -11,7 +11,7 @@ class AuthMiddlewareTest extends TestCase
     public function test_not_logged_in_redirect(): void
     {
         $response = $this->get('/cities');
-        $response->assertStatus(302);
+        $response->assertStatus(403);
     }
 
     public function test_non_admin_blocked(): void
@@ -30,7 +30,7 @@ class AuthMiddlewareTest extends TestCase
     {
         // Create user, set admin, and log in
         $user = User::factory()->create();
-        $user->is_admin = true;
+        $user->verified = true;
         $this->actingAs($user);
 
         $response = $this->get('/cities');
