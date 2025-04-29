@@ -2,9 +2,11 @@
 
 namespace Database\Seeders;
 
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
+// use phpfaker
 use Faker\Factory as Faker;
 
 class CitiesTableSeeder extends Seeder
@@ -14,25 +16,20 @@ class CitiesTableSeeder extends Seeder
      */
     public function run(): void
     {
-        $faker = Faker::create();
-        
-        // Arrays for more realistic data generation
-        $continents = ['North America', 'South America', 'Europe', 'Asia', 'Africa', 'Australia', 'Antarctica'];
-        $countries = [
-            'United States', 'Canada', 'United Kingdom', 'France', 'Germany', 'Spain', 'Italy',
-            'Japan', 'China', 'Australia', 'Brazil', 'Argentina', 'Mexico', 'India', 'South Africa',
-            'Russia', 'Sweden', 'Norway', 'Egypt', 'Kenya', 'Nigeria', 'South Korea', 'Thailand'
-        ];
-        
-        $cities = [];
-        
-        for ($i = 0; $i < 20; $i++) {
-            $country = $faker->randomElement($countries);
-            $continent = $faker->randomElement($continents);
-            $isCapital = $faker->boolean(20); // 20% chance of being a capital
-            
-            $cities[] = [
-                'name' => $faker->city,
+       $faker = Faker::create();
+
+       $continents = ['Africa', 'Asia', 'Europe', 'North America', 'Oceania', 'South America'];
+       $countries = ['USA', 'Canada', 'Mexico', 'UK', 'France', 'Germany', 'Italy', 'Spain', 'Australia', 'Japan'];
+
+       $cities = [];
+
+       for($i = 0; $i < 20; $i++) {
+        $country = $faker->randomElement($countries);
+        $continent = $faker->randomElement($continents);
+        $isCapital = $faker->boolean(20); // 20% change of being a capital
+
+        $cities[] = [
+            'name' => $faker->bankAccountNumber(),
                 'country' => $country,
                 'continent' => $continent,
                 'population' => $faker->numberBetween(100000, 20000000),
@@ -44,9 +41,9 @@ class CitiesTableSeeder extends Seeder
                 'annual_tourists' => $faker->numberBetween(500000, 70000000),
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
-            ];
-        }
-        
-        DB::table('cities')->insert($cities);
+        ];
+
+       }
+       DB::table('cities')->insert($cities);
     }
 }
