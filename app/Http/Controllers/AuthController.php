@@ -6,6 +6,9 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rules\File;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\WelcomeUserMail;
 
 
 class AuthController extends Controller
@@ -56,19 +59,45 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
+        // dd($request->file('avatar'));
         // Validate user input
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
+            'avatar' => [ // Validation rules for avatar! 👇
+                'nullable', 
+                File::image() 
+                    ->max(1024) // Max 1MB (1024 KB)
+            ],
         ]);
 
+        $avatarPath = null;
+
+        if ($request->hasFile('avatar') && $request->file('avatar')->isValid()) {
+            // Store the file and get the path 👇
+            $avatarPath = $request->file('avatar')->store('avatars', 'public'); 
+        }
+
         // Create the user
-        User::create([
+        $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'avatar' => $avatarPath, // Save the path! 👇
         ]);
+
+        // Send welcome email
+        Mail::to($user->email)->queue(new WelcomeUserMail($user));
+
+        // send a admin notification email
+        $adminEmail = 'admin@example.com';
+        $subject = 'New User Registration DBV themes';
+        $message = "A new user has registered:\n\nName: {$user->name}\nEmail: {$user->email}";
+        Mail::raw($message, function ($mail) use ($adminEmail, $subject) {
+            $mail->to($adminEmail)
+                ->subject($subject);
+        });
 
         // Redirect to home page with success message
         return redirect('/register')->with('success', 'Registration successful!');
